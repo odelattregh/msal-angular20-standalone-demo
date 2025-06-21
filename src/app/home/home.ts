@@ -13,7 +13,7 @@ import { Component } from '@angular/core';
     </div>
   `,
   styles: `
-    .log-container { font-family: monospace; background: #f5f5f5; padding: 1rem; max-height: 300px; overflow-y: auto; border: 1px solid #ddd; }
+    .log-container { font-family: monospace; background: #f5f5f5; padding: 1rem; max-height: 300px; overflow-wrap: anywhere; border: 1px solid #ddd; }
   `
 })
 export class HomeComponent {

@@ -8,6 +8,8 @@ import { InteractionStatus, RedirectRequest, EventMessage, EventType, Authentica
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { environment } from '../environments/environment';
+import { name as BrowserName, version as BrowserVersion } from '@azure/msal-browser/package.json';
+import { name, version } from '@azure/msal-angular/package.json';
 
 @Component({
   selector: 'app-root',
@@ -41,7 +43,6 @@ import { environment } from '../environments/environment';
           <p class="welcome">Welcome to the MSAL Angular Quickstart!</p>
           <p>This sample demonstrates how to configure MSAL Angular to login, logout, protect a route,
               and acquire an access token for a protected resource such as the Microsoft Graph.</p>
-          <p>Please sign-in to see your profile information.</p>
       </div>
 
       <!--isIframe is to avoid reload during acquireTokenSilent() because of hidden iframe -->
@@ -73,7 +74,8 @@ export class App implements OnInit, OnDestroy {
   private readonly msalGuardConfig = inject<MsalGuardConfiguration>(MSAL_GUARD_CONFIG);
 
   constructor() {
-    this.log('[APP] Constructor');
+    this.log(`[APP] MSAL ${BrowserName} - Version ${BrowserVersion}`);
+    this.log(`[APP] MSAL ${name} - Version ${version}`);
   }
 
   ngOnInit(): void {
@@ -84,6 +86,7 @@ export class App implements OnInit, OnDestroy {
     // Adds event listener that emits an event when a user account is added or removed
     // from localstorage in a different browser tab or window
     this.authService.instance.enableAccountStorageEvents();
+    console.log(this.authService);
 
     // Used after first or new login or when opening a new tab (new session)
     this.msalBroadcastService.msalSubject$.pipe(

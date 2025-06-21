@@ -12,33 +12,32 @@ export function loggerCallback(logLevel: LogLevel, message: string) {
 }
 
 export function MSALInstanceFactory(): IPublicClientApplication {
-
   return new PublicClientApplication({
-      auth: {
-        clientId: environment.msalConfig.clientId,
-        authority: `https://login.microsoftonline.com/${environment.msalConfig.tenantId}`,
-        redirectUri: '/',
-        postLogoutRedirectUri: '/',
-        navigateToLoginRequestUrl: true,
+    auth: {
+      clientId: environment.msalConfig.clientId,
+      authority: `https://login.microsoftonline.com/${environment.msalConfig.tenantId}`,
+      redirectUri: '/',
+      postLogoutRedirectUri: '/',
+      navigateToLoginRequestUrl: true,
+    },
+    cache: {
+      cacheLocation: BrowserCacheLocation.SessionStorage,
+    },
+    system: {
+      allowPlatformBroker: false,
+      loggerOptions: {
+        loggerCallback,
+        logLevel: LogLevel.Warning,
+        piiLoggingEnabled: false,
       },
-      cache: {
-        cacheLocation: BrowserCacheLocation.SessionStorage,
-      },
-      system: {
-        allowPlatformBroker: false,
-        loggerOptions: {
-          loggerCallback,
-          logLevel: LogLevel.Warning,
-          piiLoggingEnabled: false,
-        },
-      },
-    });
+    },
+  });
 }
 
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
-  return { 
+  return {
     interactionType: InteractionType.Redirect,
-    protectedResourceMap: new Map([['https://graph.microsoft.com/v1.0/me', ['user.read']]]) 
+    protectedResourceMap: new Map([['https://graph.microsoft.com/v1.0/me', ['user.read']]])
   };
 }
 
