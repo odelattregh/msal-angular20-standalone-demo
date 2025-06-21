@@ -81,46 +81,47 @@ export class App implements OnInit, OnDestroy {
     this.isIframe.set(window !== window.parent && !window.opener);
     this.log(`[APP] ngOnInit IsIframe: ${this.isIframe()}`);
 
+    // Adds event listener that emits an event when a user account is added or removed
+    // from localstorage in a different browser tab or window
     this.authService.instance.enableAccountStorageEvents();
 
     // Used after first or new login or when opening a new tab (new session)
     this.msalBroadcastService.msalSubject$.pipe(
-        filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS)
+      filter((msg: EventMessage) =>
+        msg.eventType === EventType.LOGIN_SUCCESS ||
+        msg.eventType === EventType.ACCOUNT_ADDED ||
+        msg.eventType === EventType.ACCOUNT_REMOVED),
+        takeUntil(this._destroying$)
     ).subscribe((result: EventMessage) => {
-      const payload = result.payload as AuthenticationResult;
-      this.authService.instance.setActiveAccount(payload.account);
-      this.log(`[APP] LOGIN_SUCCESS ${payload.account.username}`);
+      if (this.authService.instance.getAllAccounts().length === 0) {
+        // ACCOUNT_ADDED || ACCOUNT_REMOVED
+        this.log('[APP] ACCOUNT_ADDED || ACCOUNT_REMOVED');
+        window.location.pathname = '/';
+      } else {
+        // LOGIN_SUCCESS
+        const payload = result.payload as AuthenticationResult;
+        this.authService.instance.setActiveAccount(payload.account);
+        this.log(`[APP] LOGIN_SUCCESS ${payload.account.username}`);
+      }
     });
 
     // called after login
-    this.msalBroadcastService.inProgress$.pipe(filter((status: InteractionStatus) =>
-      status === InteractionStatus.None), takeUntil(this._destroying$)
-    ).subscribe(() => {
-      this.log('[APP] msalBroadcastService - Validate Login');
-      this.checkAndSetActiveAccount();
-    });
-
-    // Called when account is validated and logged in
-    this.authService.handleRedirectObservable().subscribe({
-      complete: () => {
-        this.log(`[APP] handleRedirectObservable complete ${this.ActiveAccount()?.username}`);
-        // Optional Acquire an application Token here
-        this.acquireToken();
-        // Allow login to enable <router-outlet>
-        this.setLoginStatus();
+    this.msalBroadcastService.inProgress$.pipe(
+      filter((status: InteractionStatus) => status === InteractionStatus.None),
+      takeUntil(this._destroying$)
+    ).subscribe({
+      next: () => {
+        this.log('[APP] msalBroadcastService - Validate Login');
+        this.checkAndSetActiveAccount();
+        if (this.ActiveAccount()) {
+          // Optional Acquire an application Token here
+          this.acquireToken();
+          // Allow login to enable <router-outlet>
+          this.setLoginStatus();
+        }
       },
-      error: (err) => console.error('Redirect error:', err),
-    });
-
-    // In case of account added or removed. Not used for standard login
-    this.msalBroadcastService.msalSubject$.pipe(filter((msg: EventMessage) =>
-      msg.eventType === EventType.ACCOUNT_ADDED || msg.eventType === EventType.ACCOUNT_REMOVED)
-    ).subscribe((result: EventMessage) => {
-      if (this.authService.instance.getAllAccounts().length === 0) {
-        this.log('[APP] msalBroadcastService no account');
-        window.location.pathname = '/';
-      } else {
-        this.log('[APP] msalBroadcastService with account');
+      complete: () => {
+        this.log('[APP] msalBroadcastService - Completed');
       }
     });
   }
@@ -131,12 +132,8 @@ export class App implements OnInit, OnDestroy {
 
   private acquireToken() {
     const activeAccount: AccountInfo | undefined = this.authService.instance.getActiveAccount() ?? undefined;
-    const silentRequest: SilentRequest = {
-      scopes: [environment.apiKey],
-      account: activeAccount,
-    };
+    const silentRequest: SilentRequest = { scopes: [environment.apiKey], account: activeAccount };
     this.authService.instance.acquireTokenSilent(silentRequest).then((result: AuthenticationResult) => {
-      console.log(`[APP] acquireToken ${result.accessToken.substring(0, 10)}`);
       this.log(`[APP] acquireToken ${result.accessToken.substring(0, 10)}`);
       // Set token to sessionStorage for http header usage without Msal
       this.setToken(result);
@@ -152,11 +149,6 @@ export class App implements OnInit, OnDestroy {
   }
 
   private checkAndSetActiveAccount() {
-    /**
-     * If no active account set but there are accounts signed in, sets first account to active account
-     * To use active account set here, subscribe to inProgress$ first in your component
-     * Note: Basic usage demonstrated. Your app may require more complicated account selection logic
-     */
     let activeAccount: AccountInfo | null = this.authService.instance.getActiveAccount();
     if (!activeAccount && this.authService.instance.getAllAccounts().length > 0) {
       this.log('[APP] checkAndSetActiveAccount Set Active Account');
