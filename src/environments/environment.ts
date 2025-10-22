@@ -6,7 +6,7 @@ export const environment = {
     REDIRECT_URI: '/',
     ENDPOINT_URI: '/',
     API_CLIENT_ID: '/',
-    API_CLIENT_ACCESS: 'user.read'
+    API_CLIENT_ACCESS: 'user.read', // or your custom API scope
   },
   apiKey: ''
 };
