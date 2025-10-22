@@ -1,13 +1,10 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { MsalService, MsalBroadcastService, MSAL_GUARD_CONFIG, MsalGuardConfiguration, MSAL_INSTANCE } from '@azure/msal-angular';
-import { InteractionStatus, RedirectRequest, EventMessage, EventType, AuthenticationResult, SilentRequest, AccountInfo, IPublicClientApplication } from '@azure/msal-browser';
-import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
-import { environment } from '../environments/environment';
+import { MSAL_INSTANCE } from '@azure/msal-angular';
+import { AccountInfo, IPublicClientApplication } from '@azure/msal-browser';
 import { FoSecurity } from './services/FoSecurity';
 import { FoUtils } from './services/FoUtils';
 

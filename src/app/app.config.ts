@@ -59,7 +59,6 @@ export function MSALInstanceFactory(): IPublicClientApplication {
 
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   return {
-  return {
     interactionType: InteractionType.Redirect,
     protectedResourceMap: new Map([
       ['https://graph.microsoft.com/v1.0/me', ['user.read']],
