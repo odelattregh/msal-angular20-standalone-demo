@@ -1,0 +1,18 @@
+{
+  "extends": "./.eslintrc.base.json",
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "excludedFiles": [
+        "src/environments/**"
+      ],
+      "parserOptions": {
+        "project": [
+          "./tsconfig.app.json"
+        ]
+      }
+    }
+  ]
+}

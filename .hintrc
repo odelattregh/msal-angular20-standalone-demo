@@ -1,0 +1,33 @@
+{
+  "extends": [
+    "web-recommended"
+  ],
+  "hints": {
+    "no-disallowed-headers": [
+      "warning",
+      {
+        "ignore": [
+          "Server"
+        ],
+        "include": [
+          "Custom-Header"
+        ]
+      }
+    ],
+    "x-content-type-options": "error",
+    "html-checker": "off",
+    "axe/forms": [
+      "default",
+      {
+        "label": "off"
+      }
+    ]
+  },
+  "browserslist": [
+    "defaults",
+    "not ie 11",
+    "not and_ff <= 123",
+    "not firefox <= 123",
+    "not opera <= 108"
+  ]
+}
