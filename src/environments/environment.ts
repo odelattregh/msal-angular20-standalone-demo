@@ -1,8 +1,12 @@
 export const environment = {
   production: false,
   msalConfig: {
-    clientId: 'ENTER_CLIENT_ID',
-    tenantId: 'ENTER_TENANT_ID',
+    CLIENT_ID: 'ENTER_CLIENT_ID',
+    TENANT_ID: 'ENTER_TENANT_ID',
+    REDIRECT_URI: '/',
+    ENDPOINT_URI: '/',
+    API_CLIENT_ID: '/',
+    API_CLIENT_ACCESS: 'user.read'
   },
   apiKey: ''
 };
